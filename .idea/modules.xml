@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Autonomous-Supply-Chain-Resilience-Agent.iml" filepath="$PROJECT_DIR$/.idea/Autonomous-Supply-Chain-Resilience-Agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/test_fronted/test_fronted.iml" filepath="$PROJECT_DIR$/test_fronted/test_fronted.iml" />
     </modules>
   </component>
 </project>
