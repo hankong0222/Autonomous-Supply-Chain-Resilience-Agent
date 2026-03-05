@@ -1,7 +1,7 @@
 import numpy as np
 
 class RiskModel:
-    def __init__(self, alpha=0.4, beta=0.3, gamma=0.2, delta=0.1):
+    def __init__(self, alpha=0.4, beta=0.1, gamma=0.15, delta=0.15):
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
@@ -12,36 +12,6 @@ class RiskModel:
         Normalize value to 0-1
         """
         return max(0, min((value - min_val) / (max_val - min_val), 1))
-
-    def calculate_financial_health(
-        self,
-        current_assets,
-        current_liabilities,
-        debt,
-        equity,
-        revenue,
-        profit
-    ):
-
-        # Liquidity
-        current_ratio = current_assets / current_liabilities
-        liquidity_score = self.normalize(current_ratio, 0, 3)
-
-        # Profitability
-        profit_margin = profit / revenue
-        profit_score = self.normalize(profit_margin, 0, 0.5)
-
-        # Leverage
-        debt_equity = debt / equity
-        debt_score = self.normalize(debt_equity, 0, 2)
-
-        financial_health = (
-            0.4 * liquidity_score +
-            0.4 * profit_score +
-            0.2 * (1 - debt_score)
-        )
-
-        return financial_health
        
     def calculate_market_volatility(self, historical_prices):
         returns = np.diff(historical_prices) / historical_prices[:-1]
@@ -81,7 +51,6 @@ class RiskModel:
 
         return risk_score
     
-
     
 # Example usage
 if __name__ == "__main__": 
