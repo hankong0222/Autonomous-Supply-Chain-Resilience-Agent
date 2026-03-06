@@ -1,4 +1,3 @@
-from asyncio import events
 from fileinput import filename
 from os import path
 from pathlib import Path

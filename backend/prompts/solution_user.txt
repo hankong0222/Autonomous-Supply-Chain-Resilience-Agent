@@ -1,0 +1,45 @@
+A supply chain disruption risk has been detected.
+
+Company profile:
+{company_profile}
+
+Supply chain route at risk:
+{route_info}
+
+Risk assessment:
+{risk_assessment}
+
+Provide 3 mitigation strategies.
+
+For each strategy include:
+
+1. Strategy name
+2. Description
+3. Expected operational impact
+4. ROI analysis
+
+ROI analysis must estimate:
+
+- Safety stock reduction (%)
+- Reduction in emergency shipments (%)
+- Estimated cost savings compared to disruption ($ or %)
+- Lead time improvement (% or days)
+- Improved Operational efficiency (%)
+- risk reduction (%)
+
+Return the result in JSON format:
+{{
+  "solutions": [
+    {{
+      "strategy_name": "",
+      "description": "",
+      "safety_stock_reduction": "",
+      "emergency_shipment_reduction": "",
+      "disruption_cost_savings": "",
+      "lead_time_improvement": "",
+      “operational_efficiency": "",
+      "risk_reduction": "",
+      "reasoning": ""
+    }}
+  ]
+}}
