@@ -1,7 +1,7 @@
 import numpy as np
 
 class RiskModel:
-    def __init__(self, alpha=0.4, beta=0.1, gamma=0.15, delta=0.15):
+    def __init__(self, alpha=0.4, beta=0.1, gamma=0.25, delta=0.25):
         self.alpha = alpha
         self.beta = beta
         self.gamma = gamma
