@@ -1,51 +1,152 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import './App.css'
-import LoginTab from './components/LoginTab.jsx'
-import SignupTab from './components/SignupTab.jsx'
 import CompanyInfoTab from './components/CompanyInfoTab.jsx'
 import DashboardTab from './components/DashboardTab.jsx'
 
-function App() {
-  const [step, setStep] = useState('auth') // 'auth' | 'setup' | 'dashboard'
-  const [authMode, setAuthMode] = useState('login') // 'login' | 'signup'
-  const [companyName, setCompanyName] = useState('')
-  const [hasCompanyData, setHasCompanyData] = useState(false)
-  const [riskTolerance, setRiskTolerance] = useState(50)
-  const [suppliers, setSuppliers] = useState([
-    { id: 1, name: '', country: '', productType: '' },
-  ])
-  const [transportTypes, setTransportTypes] = useState([])
-  const [isDragActive, setIsDragActive] = useState(false)
-  const [uploadedFiles, setUploadedFiles] = useState([])
+function AuthPage() {
+  const navigate = useNavigate()
 
-  const handleLoginSubmit = (event) => {
+  return (
+    <div className="split-auth-root">
+      <div
+        className="split-panel login-panel"
+        onClick={() => navigate('/login')}
+      >
+        <div className="split-panel-inner">
+          <div className="split-panel-header">
+            <h1>Login</h1>
+            <p>Access your existing company workspace.</p>
+          </div>
+          <button
+            type="button"
+            className="primary-button"
+            onClick={(event) => {
+              event.stopPropagation()
+              navigate('/login')
+            }}
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+
+      <div
+        className="split-panel signup-panel"
+        onClick={() => navigate('/signup')}
+      >
+        <div className="split-panel-inner">
+          <div className="split-panel-header">
+            <h1>Sign Up</h1>
+            <p>Register a new company and set up details.</p>
+          </div>
+          <button
+            type="button"
+            className="primary-button"
+            onClick={(event) => {
+              event.stopPropagation()
+              navigate('/signup')
+            }}
+          >
+            Go to Sign Up
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function LoginPage({ onLogin }) {
+  const navigate = useNavigate()
+
+  const handleSubmit = (event) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const company = formData.get('companyName')?.toString().trim() ?? ''
 
-    setCompanyName(company || 'Unnamed company')
-    // In this front-end prototype, "hasCompanyData" is tracked in memory:
-    // - if company data has been set up in this session, go directly to dashboard
-    // - otherwise, send the user to the company setup page first
-    setStep(hasCompanyData ? 'dashboard' : 'setup')
+    onLogin(company || 'Unnamed company')
+    navigate('/dashboard')
   }
 
-  const handleSignupSubmit = (event) => {
+  return (
+    <div className="auth-layout">
+      <div className="auth-card">
+        <header className="auth-header">
+          <div className="brand-mark">AS</div>
+          <div>
+            <h1>Login</h1>
+            <p className="auth-subtitle">
+              Access your existing company workspace.
+            </p>
+          </div>
+        </header>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label className="field">
+            <span className="field-label">Email</span>
+            <input
+              type="email"
+              name="companyName"
+              placeholder="you@example.com"
+              required
+            />
+          </label>
+
+          <label className="field">
+            <span className="field-label">Password</span>
+            <input
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              autoComplete="current-password"
+              required
+            />
+          </label>
+
+          <div className="auth-actions">
+            <label className="remember">
+              <input type="checkbox" name="remember" />
+              <span>Remember on this device</span>
+            </label>
+            <button type="button" className="link-button">
+              Forgot password?
+            </button>
+          </div>
+
+          <button type="submit" className="primary-button">
+            Login
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function SignupPage({
+  companyName,
+  setCompanyName,
+  riskTolerance,
+  setRiskTolerance,
+  suppliers,
+  setSuppliers,
+  transportTypes,
+  setTransportTypes,
+  isDragActive,
+  setIsDragActive,
+  uploadedFiles,
+  setUploadedFiles,
+}) {
+  const navigate = useNavigate()
+
+  const handleSubmit = (event) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    const company = formData.get('companyName')?.toString().trim() ?? ''
+    const company = formData.get('companyName')?.toString().trim() ?? companyName
 
     setCompanyName(company || 'Unnamed company')
-    setHasCompanyData(false)
-    setStep('setup')
-  }
-
-  const handleSetupSubmit = (event) => {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
 
     console.log('Company setup form data (front-end only):', {
-      companyName,
+      companyName: company || 'Unnamed company',
       industry: formData.get('industry'),
       mainRoutes: formData.get('mainRoutes'),
       riskTolerance,
@@ -56,46 +157,85 @@ function App() {
       uploadedFiles,
     })
 
-    setHasCompanyData(true)
-    setStep('dashboard')
+    navigate('/dashboard')
   }
 
   return (
-    <div className="app-root">
-      <div className="background-gradient" />
-      {step === 'auth' && (
-        <div className="split-auth-root">
-          <LoginTab
-            authMode={authMode}
-            setAuthMode={setAuthMode}
-            onSubmit={handleLoginSubmit}
+    <CompanyInfoTab
+      companyName={companyName}
+      riskTolerance={riskTolerance}
+      setRiskTolerance={setRiskTolerance}
+      suppliers={suppliers}
+      setSuppliers={setSuppliers}
+      transportTypes={transportTypes}
+      setTransportTypes={setTransportTypes}
+      isDragActive={isDragActive}
+      setIsDragActive={setIsDragActive}
+      uploadedFiles={uploadedFiles}
+      setUploadedFiles={setUploadedFiles}
+      onBack={() => navigate('/')}
+      onSubmit={handleSubmit}
+    />
+  )
+}
+
+function Dashboard({ companyName }) {
+  const navigate = useNavigate()
+
+  return (
+    <DashboardTab
+      companyName={companyName}
+      onEditCompany={() => navigate('/signup')}
+    />
+  )
+}
+
+function App() {
+  const [companyName, setCompanyName] = useState('')
+  const [riskTolerance, setRiskTolerance] = useState(50)
+  const [suppliers, setSuppliers] = useState([
+    { id: 1, name: '', country: '', productType: '' },
+  ])
+  const [transportTypes, setTransportTypes] = useState([])
+  const [isDragActive, setIsDragActive] = useState(false)
+  const [uploadedFiles, setUploadedFiles] = useState([])
+
+  return (
+    <BrowserRouter>
+      <div className="app-root">
+        <div className="background-gradient" />
+        <Routes>
+          <Route path="/" element={<AuthPage />} />
+          <Route
+            path="/login"
+            element={<LoginPage onLogin={setCompanyName} />}
           />
-          <SignupTab
-            authMode={authMode}
-            setAuthMode={setAuthMode}
-            onSubmit={handleSignupSubmit}
+          <Route
+            path="/signup"
+            element={
+              <SignupPage
+                companyName={companyName}
+                setCompanyName={setCompanyName}
+                riskTolerance={riskTolerance}
+                setRiskTolerance={setRiskTolerance}
+                suppliers={suppliers}
+                setSuppliers={setSuppliers}
+                transportTypes={transportTypes}
+                setTransportTypes={setTransportTypes}
+                isDragActive={isDragActive}
+                setIsDragActive={setIsDragActive}
+                uploadedFiles={uploadedFiles}
+                setUploadedFiles={setUploadedFiles}
+              />
+            }
           />
-        </div>
-      )}
-      {step === 'setup' && (
-        <CompanyInfoTab
-          companyName={companyName}
-          riskTolerance={riskTolerance}
-          setRiskTolerance={setRiskTolerance}
-          suppliers={suppliers}
-          setSuppliers={setSuppliers}
-          transportTypes={transportTypes}
-          setTransportTypes={setTransportTypes}
-          isDragActive={isDragActive}
-          setIsDragActive={setIsDragActive}
-          uploadedFiles={uploadedFiles}
-          setUploadedFiles={setUploadedFiles}
-          onBack={() => setStep('auth')}
-          onSubmit={handleSetupSubmit}
-        />
-      )}
-      {step === 'dashboard' && <DashboardTab companyName={companyName} />}
-    </div>
+          <Route
+            path="/dashboard"
+            element={<Dashboard companyName={companyName} />}
+          />
+        </Routes>
+      </div>
+    </BrowserRouter>
   )
 }
 
