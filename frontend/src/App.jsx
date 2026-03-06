@@ -1,8 +1,40 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import './App.css'
 import CompanyInfoTab from './components/CompanyInfoTab.jsx'
 import DashboardTab from './components/DashboardTab.jsx'
+
+class ErrorBoundary extends Component {
+  state = { hasError: false, error: null }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="app-root" style={{ padding: '2rem', textAlign: 'center' }}>
+          <div className="background-gradient" />
+          <div style={{ position: 'relative', zIndex: 1, color: '#e5e7eb' }}>
+            <h1 style={{ marginBottom: '1rem' }}>Something went wrong</h1>
+            <p style={{ marginBottom: '1rem', color: '#9ca3af' }}>
+              {this.state.error?.message || 'An error occurred'}
+            </p>
+            <button
+              type="button"
+              className="primary-button"
+              onClick={() => window.location.reload()}
+            >
+              Reload page
+            </button>
+          </div>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 function AuthPage() {
   const navigate = useNavigate()
@@ -201,10 +233,11 @@ function App() {
   const [uploadedFiles, setUploadedFiles] = useState([])
 
   return (
-    <BrowserRouter>
-      <div className="app-root">
-        <div className="background-gradient" />
-        <Routes>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <div className="app-root">
+          <div className="background-gradient" />
+          <Routes>
           <Route path="/" element={<AuthPage />} />
           <Route
             path="/login"
@@ -233,9 +266,10 @@ function App() {
             path="/dashboard"
             element={<Dashboard companyName={companyName} />}
           />
-        </Routes>
-      </div>
-    </BrowserRouter>
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }
 
