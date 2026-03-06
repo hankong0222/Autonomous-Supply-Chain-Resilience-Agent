@@ -1,0 +1,26 @@
+Routes: {routes}
+Supplier locations: {supplier_locations}
+Given the events: {events} 
+
+Analyze the events and determine the risk impact on each supply chain route.
+
+Multiple events may affect the same route.
+Aggregate their effects when computing the final route risk.
+
+Return JSON in the following format:
+{{
+    "routes": [
+        {{
+        "route_name": "",
+        "severity": 0-1,
+        "exposure": 0-1,
+        "contributing_events": [
+            {{
+                "event_summary": "",
+                "event_type": "",
+                "severity": 0-1,
+                "exposure": 0-1,
+            }}
+        ],
+        "explanation": ""
+}}]}}
