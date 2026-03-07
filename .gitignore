@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Environment and secrets
+.env
+.env.*
+backend/google_oauth.json
+backend/token.json
+*.local
+
+# Build / cache
+dist
+dist-ssr
+.idea
+.DS_Store
+*.log
