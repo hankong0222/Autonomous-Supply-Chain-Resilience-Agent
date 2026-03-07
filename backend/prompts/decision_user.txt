@@ -1,0 +1,25 @@
+Supply chain disruption analysis has been completed.
+
+company_health_score:
+{company_health_score}
+
+company_tolerance:
+{company_tolerance}
+
+solutions:
+{solutions}
+
+Evaluate the solutions and determine the best course of action.
+
+Return JSON in this format:
+
+{
+"recommended_solution": "",
+"reasoning": "",
+"expected_impact": {
+"safety_stock_reduction": "",
+"emergency_shipments_reduction": "",
+"cost_savings": "",
+"lead_time_improvement": ""
+}
+}
