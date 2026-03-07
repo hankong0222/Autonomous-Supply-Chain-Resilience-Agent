@@ -1,0 +1,32 @@
+A mitigation strategy has been approved.
+
+Strategy:
+{selected_solution}
+
+Company profile:
+{company_profile}
+
+Supply chain route:
+{route_info}
+
+Generate executable automation actions.
+
+If an action involves sending an email, generate a full professional email.
+
+Return JSON:
+{{
+"actions":[
+{{
+"action_type":"",
+"parameters":{{
+    "subject": "",
+    "greeting": "",
+    "context": "", 
+    "request" : "",
+    "deadline": "",
+    "closing" : "",
+    "signature": ""
+}}
+}}
+]
+}}
