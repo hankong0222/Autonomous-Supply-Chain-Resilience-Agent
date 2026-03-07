@@ -1,5 +1,7 @@
 function CompanyInfoTab({
   companyName,
+  financials,
+  onFinancialChange,
   riskTolerance,
   setRiskTolerance,
   suppliers,
@@ -13,6 +15,39 @@ function CompanyInfoTab({
   onBack,
   onSubmit,
 }) {
+  const financialFields = [
+    {
+      key: 'currentAsset',
+      label: 'Current Assets',
+      placeholder: 'Enter current assets',
+    },
+    {
+      key: 'currentLiabilities',
+      label: 'Current Liabilities',
+      placeholder: 'Enter current liabilities',
+    },
+    {
+      key: 'debt',
+      label: 'Debt',
+      placeholder: 'Enter debt',
+    },
+    {
+      key: 'equity',
+      label: 'Equity',
+      placeholder: 'Enter equity',
+    },
+    {
+      key: 'profit',
+      label: 'Profit',
+      placeholder: 'Enter profit',
+    },
+    {
+      key: 'revenue',
+      label: 'Revenue',
+      placeholder: 'Enter revenue',
+    },
+  ]
+
   return (
     <div className="auth-layout data-layout">
       <div className="auth-card">
@@ -152,17 +187,35 @@ function CompanyInfoTab({
             </div>
           </label>
 
-          <label className="field">
-            <span className="field-label">Operational budget</span>
-            <input
-              type="number"
-              name="operationalBudget"
-              min="0"
-              step="1000"
-              placeholder="e.g. 2500000"
-            />
-            <span className="field-hint">Enter the approximate annual operational budget.</span>
-          </label>
+          <section className="financial-section">
+            <div className="financial-section-header">
+              <h2>Financial Information</h2>
+              <p>
+                Add the core financial metrics used to build the company profile.
+              </p>
+            </div>
+
+            <div className="financial-grid">
+              {financialFields.map(({ key, label, placeholder }) => (
+                <label key={key} className="field financial-field">
+                  <span className="field-label">{label}</span>
+                  <input
+                    type="number"
+                    name={key}
+                    step="any"
+                    placeholder={placeholder}
+                    value={financials[key]}
+                    onChange={(e) =>
+                      onFinancialChange(
+                        key,
+                        e.target.value === '' ? 0 : Number(e.target.value),
+                      )
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          </section>
 
           <label className="field">
             <span className="field-label">

@@ -94,9 +94,10 @@ function LoginPage({ onLogin }) {
   const handleSubmit = (event) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    const company = formData.get('companyName')?.toString().trim() ?? ''
+    const email = formData.get('email')?.toString().trim() ?? ''
+    const password = formData.get('password')?.toString() ?? ''
 
-    onLogin(company || 'Unnamed company')
+    onLogin({ email, password })
     navigate('/dashboard')
   }
 
@@ -118,8 +119,9 @@ function LoginPage({ onLogin }) {
             <span className="field-label">Email</span>
             <input
               type="email"
-              name="companyName"
+              name="email"
               placeholder="you@example.com"
+              autoComplete="email"
               required
             />
           </label>
@@ -155,8 +157,110 @@ function LoginPage({ onLogin }) {
 }
 
 function SignupPage({
-  companyName,
-  setCompanyName,
+  companyProfile,
+  setCompanyProfile,
+}) {
+  const navigate = useNavigate()
+  const [signupForm, setSignupForm] = useState({
+    companyName: companyProfile.companyName,
+    email: companyProfile.email,
+    password: companyProfile.password,
+  })
+
+  const updateSignupField = (field) => (event) => {
+    setSignupForm((prev) => ({
+      ...prev,
+      [field]: event.target.value,
+    }))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    const signupPayload = {
+      companyName: signupForm.companyName.trim(),
+      email: signupForm.email.trim(),
+      password: signupForm.password,
+    }
+
+    if (!signupPayload.companyName || !signupPayload.email || !signupPayload.password) {
+      window.alert('Company name, email, and password are required.')
+      return
+    }
+
+    setCompanyProfile((prev) => ({
+      ...prev,
+      ...signupPayload,
+    }))
+
+    console.log('Signup request payload (front-end only):', signupPayload)
+    navigate('/company-info')
+  }
+
+  return (
+    <div className="auth-layout">
+      <div className="auth-card">
+        <header className="auth-header">
+          <div className="brand-mark">AS</div>
+          <div>
+            <h1>Sign Up</h1>
+            <p className="auth-subtitle">
+              Create a company account before completing the company profile.
+            </p>
+          </div>
+        </header>
+
+        <form className="auth-form" onSubmit={handleSubmit}>
+          <label className="field">
+            <span className="field-label">Company Name</span>
+            <input
+              type="text"
+              name="companyName"
+              placeholder="Example Logistics Inc."
+              value={signupForm.companyName}
+              onChange={updateSignupField('companyName')}
+              required
+            />
+          </label>
+
+          <label className="field">
+            <span className="field-label">Email</span>
+            <input
+              type="email"
+              name="email"
+              placeholder="contact@example.com"
+              autoComplete="email"
+              value={signupForm.email}
+              onChange={updateSignupField('email')}
+              required
+            />
+          </label>
+
+          <label className="field">
+            <span className="field-label">Password</span>
+            <input
+              type="password"
+              name="password"
+              placeholder="password123"
+              autoComplete="new-password"
+              value={signupForm.password}
+              onChange={updateSignupField('password')}
+              required
+            />
+          </label>
+
+          <button type="submit" className="primary-button">
+            Continue to Company Info
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+function CompanyInfoPage({
+  companyProfile,
+  setCompanyProfile,
   riskTolerance,
   setRiskTolerance,
   suppliers,
@@ -173,18 +277,17 @@ function SignupPage({
   const handleSubmit = (event) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
-    const company = formData.get('companyName')?.toString().trim() ?? companyName
 
-    setCompanyName(company || 'Unnamed company')
-
-    console.log('Company setup form data (front-end only):', {
-      companyName: company || 'Unnamed company',
+    console.log('Company profile form data (front-end only):', {
+      companyName: companyProfile.companyName || 'Unnamed company',
+      email: companyProfile.email,
+      password: companyProfile.password,
       industry: formData.get('industry'),
       mainRoutes: formData.get('mainRoutes'),
       riskTolerance,
+      financials: companyProfile.financials,
       suppliers,
       transportTypes,
-      operationalBudget: formData.get('operationalBudget'),
       logisticsMethods: formData.get('logisticsMethods'),
       uploadedFiles,
     })
@@ -194,7 +297,17 @@ function SignupPage({
 
   return (
     <CompanyInfoTab
-      companyName={companyName}
+      companyName={companyProfile.companyName}
+      financials={companyProfile.financials}
+      onFinancialChange={(field, value) =>
+        setCompanyProfile((prev) => ({
+          ...prev,
+          financials: {
+            ...prev.financials,
+            [field]: value,
+          },
+        }))
+      }
       riskTolerance={riskTolerance}
       setRiskTolerance={setRiskTolerance}
       suppliers={suppliers}
@@ -205,7 +318,7 @@ function SignupPage({
       setIsDragActive={setIsDragActive}
       uploadedFiles={uploadedFiles}
       setUploadedFiles={setUploadedFiles}
-      onBack={() => navigate('/')}
+      onBack={() => navigate('/signup')}
       onSubmit={handleSubmit}
     />
   )
@@ -217,13 +330,25 @@ function Dashboard({ companyName }) {
   return (
     <DashboardTab
       companyName={companyName}
-      onEditCompany={() => navigate('/signup')}
+      onEditCompany={() => navigate('/company-info')}
     />
   )
 }
 
 function App() {
-  const [companyName, setCompanyName] = useState('')
+  const [companyProfile, setCompanyProfile] = useState({
+    companyName: '',
+    email: '',
+    password: '',
+    financials: {
+      currentAsset: 0,
+      currentLiabilities: 0,
+      debt: 0,
+      equity: 0,
+      profit: 0,
+      revenue: 0,
+    },
+  })
   const [riskTolerance, setRiskTolerance] = useState(50)
   const [suppliers, setSuppliers] = useState([
     { id: 1, name: '', country: '', productType: '' },
@@ -231,6 +356,12 @@ function App() {
   const [transportTypes, setTransportTypes] = useState([])
   const [isDragActive, setIsDragActive] = useState(false)
   const [uploadedFiles, setUploadedFiles] = useState([])
+  const handleLogin = (credentials) => {
+    setCompanyProfile((prev) => ({
+      ...prev,
+      ...credentials,
+    }))
+  }
 
   return (
     <ErrorBoundary>
@@ -241,14 +372,23 @@ function App() {
           <Route path="/" element={<AuthPage />} />
           <Route
             path="/login"
-            element={<LoginPage onLogin={setCompanyName} />}
+            element={<LoginPage onLogin={handleLogin} />}
           />
           <Route
             path="/signup"
             element={
               <SignupPage
-                companyName={companyName}
-                setCompanyName={setCompanyName}
+                companyProfile={companyProfile}
+                setCompanyProfile={setCompanyProfile}
+              />
+            }
+          />
+          <Route
+            path="/company-info"
+            element={
+              <CompanyInfoPage
+                companyProfile={companyProfile}
+                setCompanyProfile={setCompanyProfile}
                 riskTolerance={riskTolerance}
                 setRiskTolerance={setRiskTolerance}
                 suppliers={suppliers}
@@ -264,7 +404,7 @@ function App() {
           />
           <Route
             path="/dashboard"
-            element={<Dashboard companyName={companyName} />}
+            element={<Dashboard companyName={companyProfile.companyName} />}
           />
           </Routes>
         </div>
